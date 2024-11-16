@@ -1,14 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const userRouter = require('./src/routers/user.router');
+const postRouter = require('./src/routers/post.router');
+
 
 app.use(bodyParser.json());
 
-app.get('/home',(req,res)=>{
-    res.status(200).json({
-        msg : 'Página de inicio'
-    });
-});
+app.use('/api',userRouter);
+app.use('/api',postRouter);
 
 app.use((req,res)=>{
     res.status(404).json({
