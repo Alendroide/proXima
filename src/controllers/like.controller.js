@@ -1,6 +1,7 @@
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
-require('dotenv').config()
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const listarlikes = () => async(req,res) =>{
     try{
@@ -30,10 +31,15 @@ const verLikes = () => async(req,res)=>{
 
 const crearLike = () => async(req,res) =>{
     try{
+        //Pegado por pepe
+        const token = req.header('Auth');
+        const user = jwt.verify(token,process.env.SECRET_WORD);
+        const id = user.id;
+
         const data = req.body;
         const like = await prisma.like.create({
             data:{
-                userId : data.userId,
+                userId : id,
                 postId : data.postId
             },
         });

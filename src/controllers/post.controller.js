@@ -16,13 +16,22 @@ const listarPosts = () => async(req,res) => {
 
 const verPost = () => async(req,res) => {
     try{
-        const id = req.body.id;
+        const id = parseInt(req.params.id);
         const post = await prisma.post.findUnique({
             where: {
                 id
+            },
+            include : {
+                author : {select : { username : true, img : true } },
+                comments : {
+                    select : { comment : true, created_at : true, user : {select : { username : true, img : true } }, replies : true }
+                }
             }
         });
-        return res.status(200).json(post);
+        const likes = await prisma.like.count({
+            where : {postId : id}
+        })
+        return res.status(200).json({...post,likes});
     }
     catch(error){
         console.error(error);
