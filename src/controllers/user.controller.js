@@ -59,14 +59,17 @@ const loguearUsuario = () => async(req,res) => {
             where : {
                 email
             }
-        })
+        });
+        if(!user){
+            return res.status(400).json({msg:"Usuario no encontrado"});
+        }
         const logged = await bcrypt.compare(password,user.password);
         if(logged){
             const token = jwt.sign({id : user.id},process.env.SECRET_WORD,{expiresIn : '1h'});
             return res.status(200).json({token});
         }
         else{
-            return res.status(400).json({error:"Contraseña incorrecta"});
+            return res.status(401).json({error:"Contraseña incorrecta"});
         }
     }
     catch(error){

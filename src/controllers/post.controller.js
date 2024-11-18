@@ -5,7 +5,15 @@ require('dotenv').config()
 
 const listarPosts = () => async(req,res) => {
     try{
-        const posts = await prisma.post.findMany();
+        const posts = await prisma.post.findMany({
+            orderBy : {
+                created_at : 'desc'
+            },
+            include : {
+                author : { select : { id : true, username : true, img : true } },
+                _count : { select : { likes : true } }
+            }
+        });
         return res.status(200).json(posts);
     }
     catch(error){
@@ -39,6 +47,28 @@ const verPost = () => async(req,res) => {
     }
 }
 
+const verPostsUsuario = () => async (req,res) => {
+    const user = parseInt(req.params.id)
+    try{
+        const posts = await prisma.post.findMany({
+            where : {
+                authorId : user
+            },
+            orderBy : {
+                created_at : 'desc'
+            },
+            include : {
+                author : { select : { id : true, username : true, img : true } }
+            }
+        })
+        return res.status(200).json(posts);
+    }
+    catch(error){
+        console.error(error);
+        return res.status(500).json(error)
+    }
+}
+
 const crearPost = () => async(req,res) => {
     try{
         //Sacar id de usuario desde el JWT
@@ -62,4 +92,4 @@ const crearPost = () => async(req,res) => {
     }
 }
 
-module.exports = {listarPosts,verPost,crearPost}
+module.exports = {listarPosts,verPost,crearPost,verPostsUsuario}

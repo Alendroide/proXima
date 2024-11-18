@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const verifyToken = () => (req,res,next) => {
-    const token = req.header('Auth')
+    const token = req.header('Authentication')
     if(!token){
         return res.status(403).json({msg:"No autorizado"});
     }
